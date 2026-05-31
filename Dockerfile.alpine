@@ -1,9 +1,9 @@
-# Multi-stage Dockerfile for libpff-python on Alpine Linux
+# Single-stage Dockerfile for libpff-python on Alpine Linux
 # Alpine uses musl libc instead of glibc - uses memmove for compatibility
-# Stage 1: Builder
-FROM alpine:3.19 AS builder
+# Single stage keeps all build artifacts needed for the .so runtime
+FROM alpine:3.19
 
-# Install build dependencies
+# Install build and runtime dependencies
 RUN apk add --no-cache \
     autoconf \
     automake \
@@ -13,40 +13,26 @@ RUN apk add --no-cache \
     gettext-dev \
     libtool \
     pkgconfig \
+    python3 \
     python3-dev \
     py3-pip \
     py3-wheel
 
-WORKDIR /build
+WORKDIR /app
 
 # Copy source
 COPY . .
 
-# Build wheel
+# Build and install wheel
 # Note: Alpine enforces PEP 668, so we use --break-system-packages in container
 # Note: Disable fortification for musl compatibility (mempcpy not in musl)
 RUN CFLAGS="-D_FORTIFY_SOURCE=0" python3 -m pip install --break-system-packages --upgrade pip setuptools wheel build && \
-    CFLAGS="-D_FORTIFY_SOURCE=0" python3 -m build --wheel
+    CFLAGS="-D_FORTIFY_SOURCE=0" python3 -m build --wheel && \
+    pip install --break-system-packages --upgrade pip && \
+    pip install --break-system-packages dist/*.whl
 
-# Stage 2: Runtime
-FROM alpine:3.19
-
-# Install runtime dependencies (minimal)
-RUN apk add --no-cache \
-    ca-certificates \
-    libssl3 \
-    python3 \
-    py3-pip
-
-WORKDIR /app
-
-# Copy wheel from builder
-COPY --from=builder /build/dist/*.whl .
-
-# Install the package
-# Alpine enforces PEP 668, use --break-system-packages in container
-RUN pip install --break-system-packages --upgrade pip && \
-    pip install --break-system-packages *.whl
+# Clean up source and build artifacts
+RUN rm -rf /app/build /app/dist /app/*.egg-info /app/.git
 
 # Verify installation
 RUN python3 -c "import pypff; print(f'pypff installed on Alpine: {pypff.__file__}')"
