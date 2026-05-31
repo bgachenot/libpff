@@ -192,6 +192,23 @@ class custom_build_ext(build_ext):
         """Runs the build."""
         compiler = new_compiler(compiler=self.compiler)
         if compiler.compiler_type != "msvc":
+            # Generate configure script if it doesn't exist
+            if not os.path.exists("configure"):
+                # Sync local library dependencies if script exists
+                if os.path.exists("synclibs.sh"):
+                    try:
+                        self._run_shell_command("synclibs.sh")
+                    except RuntimeError:
+                        # synclibs.sh may fail if libraries are missing, continue anyway
+                        pass
+
+                # Generate configure from configure.ac
+                if os.path.exists("autogen.sh"):
+                    self._run_shell_command("autogen.sh")
+                elif os.path.exists("configure.ac"):
+                    # Fallback: run autoconf directly
+                    self._run_shell_command("autoconf")
+
             output = self._run_shell_command(
                 "configure --disable-nls --disable-shared-libs"
             )
@@ -238,6 +255,18 @@ class custom_sdist(sdist):
         if glob.glob("*.tar.gz"):
             print("Remove existing *.tar.gz files from source directory")
             sys.exit(1)
+
+        # Generate configure if it doesn't exist
+        if not os.path.exists("configure"):
+            if os.path.exists("synclibs.sh"):
+                try:
+                    subprocess.call("sh synclibs.sh", shell=True)
+                except Exception:
+                    pass
+            if os.path.exists("autogen.sh"):
+                subprocess.call("sh autogen.sh", shell=True)
+            elif os.path.exists("configure.ac"):
+                subprocess.call("autoconf", shell=True)
 
         exit_code = subprocess.call("make dist", shell=True)
         if exit_code != 0:
