@@ -1,19 +1,18 @@
 # Multi-stage Dockerfile for libpff-python on Alpine Linux
 # Alpine uses musl libc instead of glibc - uses memmove for compatibility
 # Stage 1: Builder
-FROM alpine:latest as builder
+FROM alpine:3.19 AS builder
 
 # Install build dependencies
 RUN apk add --no-cache \
     autoconf \
     automake \
-    autopoint \
     build-base \
     ca-certificates \
     git \
-    gettext \
+    gettext-dev \
     libtool \
-    pkg-config \
+    pkgconfig \
     python3-dev \
     py3-pip \
     py3-wheel
@@ -28,7 +27,7 @@ RUN python3 -m pip install --upgrade pip setuptools wheel build && \
     python3 -m build --wheel
 
 # Stage 2: Runtime
-FROM alpine:latest
+FROM alpine:3.19
 
 # Install runtime dependencies (minimal)
 RUN apk add --no-cache \

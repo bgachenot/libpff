@@ -38,14 +38,16 @@ pip install libpff-python
 apk add --no-cache \
     autoconf \
     automake \
-    autopoint \
     build-base \
+    gettext-dev \
     libtool \
-    pkg-config \
+    pkgconfig \
     python3-dev
 
 pip install libpff-python
 ```
+
+**Note:** Alpine 3.19+ uses `gettext-dev` (includes autopoint) and `pkgconfig` (not `pkg-config`)
 
 ### macOS
 

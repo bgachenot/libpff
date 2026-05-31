@@ -87,16 +87,17 @@ sudo apt-get install -y \
 apk add --no-cache \
     autoconf \
     automake \
-    autopoint \
     build-base \
     ca-certificates \
-    gettext \
+    gettext-dev \
     libtool \
-    pkg-config \
+    pkgconfig \
     python3-dev \
     py3-pip \
     py3-wheel
 ```
+
+**Note:** Alpine uses `gettext-dev` (not `autopoint` separately) and `pkgconfig` (not `pkg-config`)
 
 **Runtime:**
 ```bash
