@@ -164,8 +164,11 @@ class custom_build_ext(build_ext):
 
         output, error = process.communicate()
         if process.returncode != 0:
-            error = "\n".join(error.split("\n")[-5:])
-            raise RuntimeError(f"Running: {command:s} failed with error:\n{error:s}.")
+            # Show full error output for build failures
+            error_msg = error if error else output
+            if not error_msg:
+                error_msg = f"Command failed with exit code {process.returncode}"
+            raise RuntimeError(f"Running: {command:s} failed with error:\n{error_msg:s}")
 
         return output
 
@@ -198,16 +201,23 @@ class custom_build_ext(build_ext):
                 if os.path.exists("synclibs.sh"):
                     try:
                         self._run_shell_command("synclibs.sh")
-                    except RuntimeError:
-                        # synclibs.sh may fail if libraries are missing, continue anyway
-                        pass
+                    except RuntimeError as exception:
+                        print(f"Warning: synclibs.sh failed: {exception}")
 
                 # Generate configure from configure.ac
-                if os.path.exists("autogen.sh"):
-                    self._run_shell_command("autogen.sh")
-                elif os.path.exists("configure.ac"):
-                    # Fallback: run autoconf directly
-                    self._run_shell_command("autoconf")
+                try:
+                    if os.path.exists("autogen.sh"):
+                        self._run_shell_command("autogen.sh")
+                    elif os.path.exists("configure.ac"):
+                        # Fallback: run autoconf directly
+                        self._run_shell_command("autoconf")
+                except RuntimeError as exception:
+                    raise RuntimeError(
+                        f"Failed to generate configure script. This requires autotools to be installed.\n"
+                        f"Install with: apt install autoconf automake libtool (Debian/Ubuntu) "
+                        f"or apk add autoconf automake libtool (Alpine)\n"
+                        f"Error: {exception}"
+                    )
 
             output = self._run_shell_command(
                 "configure --disable-nls --disable-shared-libs"
