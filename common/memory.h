@@ -109,7 +109,11 @@ extern "C" {
 
 /* Memory copy
  */
-#if defined( HAVE_MEMCPY ) || defined( WINAPI )
+#if defined( HAVE_MEMMOVE ) || defined( WINAPI )
+#define memory_copy( destination, source, count ) \
+	memmove( (void *) destination, (void *) source, count )
+
+#elif defined( HAVE_MEMCPY ) || defined( WINAPI )
 #define memory_copy( destination, source, count ) \
 	memcpy( (void *) destination, (void *) source, count )
 #endif

@@ -35,10 +35,10 @@
 
 #if defined( HAVE_PFF_TEST_MEMORY )
 
-static void *(*pff_test_real_malloc)(size_t)                       = NULL;
-static void *(*pff_test_real_memcpy)(void *, const void *, size_t) = NULL;
-static void *(*pff_test_real_memset)(void *, int, size_t)          = NULL;
-static void *(*pff_test_real_realloc)(void *, size_t)              = NULL;
+static void *(*pff_test_real_malloc)(size_t)                        = NULL;
+static void *(*pff_test_real_memmove)(void *, const void *, size_t) = NULL;
+static void *(*pff_test_real_memset)(void *, int, size_t)           = NULL;
+static void *(*pff_test_real_realloc)(void *, size_t)               = NULL;
 
 int pff_test_malloc_attempts_before_fail                           = -1;
 int pff_test_memcpy_attempts_before_fail                           = -1;
@@ -85,11 +85,11 @@ void *memcpy(
        const void *source,
        size_t size )
 {
-	if( pff_test_real_memcpy == NULL )
+	if( pff_test_real_memmove == NULL )
 	{
-		pff_test_real_memcpy = dlsym(
-		                        RTLD_NEXT,
-		                        "memcpy" );
+		pff_test_real_memmove = dlsym(
+		                         RTLD_NEXT,
+		                         "memmove" );
 	}
 	if( pff_test_memcpy_attempts_before_fail == 0 )
 	{
@@ -101,7 +101,7 @@ void *memcpy(
 	{
 		pff_test_memcpy_attempts_before_fail--;
 	}
-	destination = pff_test_real_memcpy(
+	destination = pff_test_real_memmove(
 	               destination,
 	               source,
 	               size );

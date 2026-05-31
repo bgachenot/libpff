@@ -95,7 +95,11 @@ extern "C" {
 
 /* String copy
  */
-#if defined( HAVE_MEMCPY ) || defined( WINAPI )
+#if defined( HAVE_MEMMOVE ) || defined( WINAPI )
+#define narrow_string_copy( destination, source, size ) \
+	(char *) memmove( (void *) destination, (void *) source, size )
+
+#elif defined( HAVE_MEMCPY ) || defined( WINAPI )
 #define narrow_string_copy( destination, source, size ) \
 	(char *) memcpy( (void *) destination, (void *) source, size )
 

@@ -92,7 +92,11 @@ extern "C" {
 
 /* String copy
  */
-#if defined( HAVE_WMEMCPY )
+#if defined( HAVE_WMEMMOVE )
+#define wide_string_copy( destination, source, size ) \
+	(wchar_t *) wmemmove( (void *) destination, (void *) source, size )
+
+#elif defined( HAVE_WMEMCPY )
 #define wide_string_copy( destination, source, size ) \
 	(wchar_t *) wmemcpy( (void *) destination, (void *) source, size )
 
