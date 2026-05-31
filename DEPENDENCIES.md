@@ -95,9 +95,17 @@ apk add --no-cache \
     python3-dev \
     py3-pip \
     py3-wheel
+
+# Alpine enforces PEP 668, so use --break-system-packages in containers:
+python3 -m pip install --break-system-packages --upgrade pip build
+python3 -m build --wheel
 ```
 
-**Note:** Alpine uses `gettext-dev` (not `autopoint` separately) and `pkgconfig` (not `pkg-config`)
+**Notes:** 
+- Alpine uses `gettext-dev` (not `autopoint` separately) and `pkgconfig` (not `pkg-config`)
+- Alpine enforces PEP 668 externally-managed-environment
+- In Docker: use `--break-system-packages` (safe in containers)
+- On host: create venv with `python3 -m venv /path/to/venv` first
 
 **Runtime:**
 ```bash

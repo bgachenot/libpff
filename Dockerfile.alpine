@@ -23,7 +23,8 @@ WORKDIR /build
 COPY . .
 
 # Build wheel
-RUN python3 -m pip install --upgrade pip setuptools wheel build && \
+# Note: Alpine enforces PEP 668, so we use --break-system-packages in container
+RUN python3 -m pip install --break-system-packages --upgrade pip setuptools wheel build && \
     python3 -m build --wheel
 
 # Stage 2: Runtime
@@ -42,8 +43,9 @@ WORKDIR /app
 COPY --from=builder /build/dist/*.whl .
 
 # Install the package
-RUN pip install --upgrade pip && \
-    pip install *.whl
+# Alpine enforces PEP 668, use --break-system-packages in container
+RUN pip install --break-system-packages --upgrade pip && \
+    pip install --break-system-packages *.whl
 
 # Verify installation
 RUN python3 -c "import pypff; print(f'pypff installed on Alpine: {pypff.__file__}')"
