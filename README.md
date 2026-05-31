@@ -4,19 +4,29 @@ Python bindings for libpff - a library to access Personal Folder File (PFF) and 
 
 ## Installation
 
-### From PyPI
+### Recommended: Pre-built Wheels (Fastest)
 
 ```bash
 pip install libpff-python
 ```
 
-### From Source
+This downloads pre-built wheels for your platform - no compilation needed!
+
+### From Source (For Development)
+
+Building from source requires autotools. See [BUILD_REQUIREMENTS.md](BUILD_REQUIREMENTS.md) for detailed setup instructions.
 
 ```bash
-git clone https://github.com/libyal/libpff.git
+git clone https://github.com/bgachenot/libpff.git
 cd libpff
 pip install -e .
 ```
+
+**Requirements for building:**
+- Linux: `autoconf automake autopoint build-essential libtool pkg-config python3-dev`
+- Alpine: `autoconf automake autopoint build-base libtool pkg-config python3-dev`
+- macOS: `autoconf automake gettext libtool pkg-config`
+- Windows: Visual Studio 2015+ with C++ tools
 
 ## Features
 

@@ -197,6 +197,19 @@ class custom_build_ext(build_ext):
         if compiler.compiler_type != "msvc":
             # Generate configure script if it doesn't exist
             if not os.path.exists("configure"):
+                # Check if we can use pre-built wheels instead
+                if os.environ.get("PIP_BUILD_ENVIRONMENT"):
+                    raise RuntimeError(
+                        "Building libpff-python from source requires autotools. "
+                        "Please install pre-built wheels instead:\n\n"
+                        "  pip install libpff-python\n\n"
+                        "If you need to build from source, install build tools:\n"
+                        "  Ubuntu/Debian: sudo apt install autoconf automake autopoint "
+                        "build-essential libtool pkg-config\n"
+                        "  Alpine: apk add autoconf automake autopoint build-base libtool pkg-config\n"
+                        "  macOS: brew install autoconf automake gettext libtool pkg-config\n"
+                    )
+
                 # Sync local library dependencies if script exists
                 if os.path.exists("synclibs.sh"):
                     try:
@@ -205,24 +218,40 @@ class custom_build_ext(build_ext):
                         print(f"Warning: synclibs.sh failed: {exception}")
 
                 # Generate configure from configure.ac
-                try:
-                    if os.path.exists("autogen.sh"):
+                if os.path.exists("autogen.sh"):
+                    try:
                         self._run_shell_command("autogen.sh")
-                    elif os.path.exists("configure.ac"):
-                        # Fallback: run autoconf directly
+                    except RuntimeError as exception:
+                        raise RuntimeError(
+                            f"Failed to run autogen.sh. Make sure autotools is installed:\n"
+                            f"  apt install autoconf automake autopoint libtool (Debian/Ubuntu)\n"
+                            f"  apk add autoconf automake autopoint libtool (Alpine)\n"
+                            f"  brew install autoconf automake gettext libtool (macOS)\n"
+                            f"\nError: {exception}"
+                        )
+                elif os.path.exists("configure.ac"):
+                    try:
                         self._run_shell_command("autoconf")
-                except RuntimeError as exception:
-                    raise RuntimeError(
-                        f"Failed to generate configure script. This requires autotools to be installed.\n"
-                        f"Install with: apt install autoconf automake libtool (Debian/Ubuntu) "
-                        f"or apk add autoconf automake libtool (Alpine)\n"
-                        f"Error: {exception}"
-                    )
+                    except RuntimeError as exception:
+                        raise RuntimeError(
+                            f"Failed to run autoconf. Install autotools first:\n"
+                            f"  apt install autoconf (Debian/Ubuntu)\n"
+                            f"  apk add autoconf (Alpine)\n"
+                            f"  brew install autoconf (macOS)\n"
+                            f"\nError: {exception}"
+                        )
 
-            output = self._run_shell_command(
-                "configure --disable-nls --disable-shared-libs"
-            )
-            self._print_configure_summary(output)
+            if os.path.exists("configure"):
+                output = self._run_shell_command(
+                    "configure --disable-nls --disable-shared-libs"
+                )
+                self._print_configure_summary(output)
+            else:
+                raise RuntimeError(
+                    "configure script generation failed. "
+                    "Building from source requires autotools.\n"
+                    "Please use pre-built wheels: pip install libpff-python"
+                )
 
         super().run()
 
