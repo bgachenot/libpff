@@ -30,10 +30,12 @@
 
 #include <libpff/extern.h>
 
+#if !defined( LIBPFF_EXTERN_VARIABLE )
 #if defined( __CYGWIN__ ) || defined( __MINGW32__ )
 #define LIBPFF_EXTERN_VARIABLE	extern
 #else
 #define LIBPFF_EXTERN_VARIABLE	LIBPFF_EXTERN
+#endif
 #endif
 
 #else
