@@ -127,7 +127,6 @@ stamp-h[1-9]
 /libpff.spec
 /libpff/libpff.rc
 /libpff/libpff_definitions.h
-/pyproject.toml
 /jpff/classnoinst.stamp
 /pfftools/*.exe
 /pfftools/pffexport
