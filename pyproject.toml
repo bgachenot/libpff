@@ -5,16 +5,33 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "libpff-python"
 version = "20260526"
-description = "Python bindings for libpff"
+description = "Python bindings for libpff - access PFF and OFF files (PST, OST, PAB)"
+authors = [
+    { name = "Joachim Metz", email = "joachim.metz@gmail.com" },
+]
 maintainers = [
     { name = "Joachim Metz", email = "joachim.metz@gmail.com" },
 ]
+keywords = ["pff", "off", "pst", "ost", "pab", "outlook", "forensics"]
 license = "LGPL-3.0-or-later"
 license-files = ["COPYING", "COPYING.LESSER"]
-readme = {file = "README", content-type = "text/markdown"}
+readme = {file = "README.md", content-type = "text/markdown"}
 classifiers = [
     "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: C",
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: System :: Filesystems",
 ]
 requires-python = ">=3.10"
 

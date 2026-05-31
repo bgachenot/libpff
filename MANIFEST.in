@@ -1,0 +1,20 @@
+include README
+include AUTHORS
+include COPYING
+include COPYING.LESSER
+include ChangeLog
+include pyproject.toml
+include _build.py
+recursive-include common *.c *.h *.in
+recursive-include include *.c *.h *.in
+recursive-include libpff *.c *.h *.y *.l
+recursive-include m4 *.m4
+recursive-include po *.in *.po
+recursive-include pypff *.c *.h
+global-exclude .git
+global-exclude .github
+global-exclude .gitignore
+global-exclude *.o
+global-exclude *.lo
+global-exclude *.la
+global-exclude *~
